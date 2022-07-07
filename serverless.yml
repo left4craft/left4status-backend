@@ -1,0 +1,62 @@
+service: left4status-api
+frameworkVersion: '3'
+
+# set up domain name manually in aws console
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  memorySize: 512
+  region: us-east-1
+  environment:
+    TIMESTREAM_DATABASE: ${self:service}-${sls:stage}
+  httpApi:
+    cors: true
+    # set to false if no custom domain name is setup
+    disableDefaultEndpoint: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - timestream:DescribeEndpoints
+            - timestream:Select
+            - timestream:CancelQuery
+            - timestream:ListTables
+            - timestream:ListMeasures
+            - timestream:DescribeTable
+            - timestream:DescribeDatabase
+            - timestream:SelectValues
+            - timestream:WriteRecords
+            - timestream:CreateTable
+            - timestream:DeleteTable
+            - timestream:UpdateTable
+          Resource: "*"
+
+functions:
+  status:
+    handler: functions/status.status
+    events:
+      - httpApi:
+          path: /status
+          method: get
+
+  history:
+    handler: functions/history.history
+    events:
+      - httpApi:
+          path: /history
+          method: get
+
+  update:
+    handler: functions/update.update
+    events:
+      - schedule: rate(5 minutes)
+
+resources:
+  Resources:
+    TimestreamTable:
+      Type: 'AWS::Timestream::Database'
+      DeletionPolicy: Retain
+      Properties:
+        DatabaseName: ${self:provider.environment.TIMESTREAM_DATABASE}

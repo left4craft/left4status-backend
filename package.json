@@ -1,0 +1,13 @@
+{
+  "name": "left4status-api",
+  "version": "1.0.0",
+  "description": "Serverless API to get Left4Craft's status via the control panel.",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "redis": "^4.1.0",
+    "uuid": "^2.0.3",
+    "websocket": "^1.0.34"
+  }
+}
