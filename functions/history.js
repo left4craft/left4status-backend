@@ -49,20 +49,20 @@ module.exports.history = async (event, context) => {
     await client.connect();
 
     let history = await client.get('history.cache');
-    // if(history !== null) {
-    //     await client.quit();
+    if(history !== null) {
+        await client.quit();
 
-    //     return {
-    //         statusCode: 200,
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: history
-    //     };    
-    // } else {
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: history
+        };    
+    } else {
         history = {};
         history.servers = JSON.parse(await client.get('status.cache'));
-    // }
+    }
     history.servers.cached = undefined;
     history.servers.cached_timestamp = undefined;
 
@@ -121,7 +121,7 @@ module.exports.history = async (event, context) => {
     history.cached_timestamp = new Date().getTime();
 
     await client.set('history.cache', JSON.stringify(history), {
-        EX: 300
+        EX: constants.HISTORY_CACHE_TIMEOUT
     });
 
 

@@ -6,6 +6,9 @@ exports.constants = {
     HT_TTL_HOURS: 1,
     CT_TTL_DAYS: 120,
 
+    // history cache time in seconds
+    HISTORY_CACHE_TIMEOUT: 300,
+
     PANEL_REGEX: {
         spigot_tps_regex: /TPS from last 1m, 5m, 15m: (?<tps1>\S+), (?<tps5>\S+), (?<tps15>\S+)/, 
         spigot_player_regex:  /There are (?<current>\d+) of a max of (?<max>\d+) players online/, 
