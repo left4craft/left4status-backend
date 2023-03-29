@@ -131,18 +131,19 @@ module.exports.history = async (event, context) => {
 
     // console.log(online_rows);
 
-    for(const online_row of online_rows_1) {
+    // start at online row 3 because the most recent online query should have the most up-to-date list of servers
+    for(const online_row of online_rows_3) {
         if(history.servers[online_row.name]) {
 
             // merge with the online timeseries of the second and third query
             for(const online_row_2 of online_rows_2) {
                 if(online_row_2.name === online_row.name) {
-                    online_row.online = online_row.online.concat(online_row_2.online);
+                    online_row.online = online_row_2.online.concat(online_row.online);
                 }
             }
-            for(const online_row_3 of online_rows_3) {
-                if(online_row_3.name === online_row.name) {
-                    online_row.online = online_row.online.concat(online_row_3.online);
+            for(const online_row_1 of online_rows_1) {
+                if(online_row_1.name === online_row.name) {
+                    online_row.online = online_row_1.online.concat(online_row.online);
                 }
             }
 
