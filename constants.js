@@ -47,7 +47,7 @@ exports.constants = {
             type: 'bungee',
             name: 'bungee',
             display_name: 'Bungee',
-            id: '368168d4-00b7-4966-828c-b41e85dda45e'
+            id: 'c1cf5e87-43a3-4e6b-8a15-9271dd8d2692'
         },
         {
             type: 'website',
@@ -60,6 +60,12 @@ exports.constants = {
             name: 'wiki',
             display_name: 'Wiki',
             id: 'wiki.left4craft.org'
+        },
+        {
+            type: 'website',
+            name: 'download',
+            display_name: 'Downloads',
+            id: 'left4craft.download'
         },
         {
             type: 'website',
