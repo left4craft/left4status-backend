@@ -43,6 +43,7 @@ functions:
 
   history:
     handler: functions/history.history
+    timeout: 15
     events:
       - httpApi:
           path: /history

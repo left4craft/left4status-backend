@@ -16,7 +16,7 @@ const tps_query = `
 (SELECT name, id, type, 
     CREATE_TIME_SERIES(time, measure_value::double) AS tps
    FROM "${constants.DATABASE_NAME}"."${constants.TABLE_NAME}" 
-   WHERE measure_name = 'tps'
+   WHERE measure_name = 'tps' AND time > ago(14D)
    GROUP BY name, id, type)
 `
 
@@ -24,15 +24,31 @@ const player_query = `
 SELECT name, id, type, 
  CREATE_TIME_SERIES(time, measure_value::bigint) as players
 FROM "${constants.DATABASE_NAME}"."${constants.TABLE_NAME}" 
-WHERE measure_name = 'players'
+WHERE measure_name = 'players' AND time > ago(14D)
 GROUP BY name, id, type
 `
 
-const online_query = `
+const online_query_1 = `
 SELECT name, id, type, 
  CREATE_TIME_SERIES(time, measure_value::boolean) as online
 FROM "${constants.DATABASE_NAME}"."${constants.TABLE_NAME}" 
-WHERE measure_name = 'online'
+WHERE measure_name = 'online' AND time BETWEEN ago(60D) and ago(40D)
+GROUP BY name, id, type
+`
+
+const online_query_2 = `
+SELECT name, id, type, 
+ CREATE_TIME_SERIES(time, measure_value::boolean) as online
+FROM "${constants.DATABASE_NAME}"."${constants.TABLE_NAME}" 
+WHERE measure_name = 'online' AND time BETWEEN ago(40D) and ago(20D)
+GROUP BY name, id, type
+`
+
+const online_query_3 = `
+SELECT name, id, type, 
+ CREATE_TIME_SERIES(time, measure_value::boolean) as online
+FROM "${constants.DATABASE_NAME}"."${constants.TABLE_NAME}" 
+WHERE measure_name = 'online' AND time BETWEEN ago(20D) and now()
 GROUP BY name, id, type
 `
 
@@ -68,13 +84,18 @@ module.exports.history = async (event, context) => {
 
     let tps_rows = [];
     let player_rows = [];
-    let online_rows = [];
+    let online_rows_1 = [];
+    let online_rows_2 = [];
+    let online_rows_3 = [];
+
 
     // run all three queries in parallel
     await Promise.all([
         getAllRows(tps_query, null, tps_rows),
         getAllRows(player_query, null, player_rows),
-        getAllRows(online_query, null, online_rows)
+        getAllRows(online_query_1, null, online_rows_1),
+        getAllRows(online_query_2, null, online_rows_2),
+        getAllRows(online_query_3, null, online_rows_3)
     ]);
 
     // add history object
@@ -110,8 +131,21 @@ module.exports.history = async (event, context) => {
 
     // console.log(online_rows);
 
-    for(const online_row of online_rows) {
+    for(const online_row of online_rows_1) {
         if(history.servers[online_row.name]) {
+
+            // merge with the online timeseries of the second and third query
+            for(const online_row_2 of online_rows_2) {
+                if(online_row_2.name === online_row.name) {
+                    online_row.online = online_row.online.concat(online_row_2.online);
+                }
+            }
+            for(const online_row_3 of online_rows_3) {
+                if(online_row_3.name === online_row.name) {
+                    online_row.online = online_row.online.concat(online_row_3.online);
+                }
+            }
+
             history.servers[online_row.name].history.online = get_offline_times(online_row.online);
         }
     }
