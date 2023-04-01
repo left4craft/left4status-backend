@@ -75,9 +75,9 @@ exports.constants = {
         },
         {
             type: 'website',
-            name: 'haste',
+            name: 'newhaste',
             display_name: 'Haste',
-            id: 'haste.l4c.link'
+            id: 'haste.left4craft.org'
         }
     ]
 }

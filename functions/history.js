@@ -106,13 +106,13 @@ module.exports.history = async (event, context) => {
     }
 
     for(const tps_row of tps_rows) {
-        if(history.servers[tps_row.name]) {
+        if(history.servers[tps_row.name] && history.servers[tps_row.name].id === tps_row.id) {
             history.servers[tps_row.name].history.tps = tps_row.tps;
         }
     }
 
     for(const player_row of player_rows) {
-        if(history.servers[player_row.name]) {
+        if(history.servers[player_row.name] && history.servers[player_row.name].id === player_row.id) {
             history.servers[player_row.name].history.players = player_row.players;
         }
     }
@@ -133,16 +133,16 @@ module.exports.history = async (event, context) => {
 
     // start at online row 3 because the most recent online query should have the most up-to-date list of servers
     for(const online_row of online_rows_3) {
-        if(history.servers[online_row.name]) {
+        if(history.servers[online_row.name] && history.servers[online_row.name].id === online_row.id) {
 
             // merge with the online timeseries of the second and third query
             for(const online_row_2 of online_rows_2) {
-                if(online_row_2.name === online_row.name) {
+                if(online_row_2.name === online_row.name && online_row_2.id === online_row.id) {
                     online_row.online = online_row_2.online.concat(online_row.online);
                 }
             }
             for(const online_row_1 of online_rows_1) {
-                if(online_row_1.name === online_row.name) {
+                if(online_row_1.name === online_row.name && online_row_1.id === online_row.id) {
                     online_row.online = online_row_1.online.concat(online_row.online);
                 }
             }

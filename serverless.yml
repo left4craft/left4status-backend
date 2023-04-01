@@ -52,6 +52,7 @@ functions:
 
   update:
     handler: functions/update.update
+    timeout: 15
     events:
       - schedule: rate(5 minutes)
 
